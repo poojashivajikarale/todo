@@ -1,0 +1,58 @@
+<%=  render 'navbar' %>
+<div class="container">
+<br>
+<%= render 'form' %>
+<br>
+<table id="task-table" class='table'>
+
+  <tbody>
+    <% @tasks.each do |task| %>
+      <tr>
+        <td>
+        <%= form_for task, remote: true do |t| %>
+           <%= t.text_field :title, type: 'hidden' %>
+           <%= t.check_box :completed, class: "check_box", onchange: "this.form.submit();" %>
+           <%= task.title%>
+          <% end %>
+        </td>
+        <td class="text-right"><%= link_to 'Delete', task, method: :delete, data: { confirm: 'Are you sure?' }, class: "btn btn-danger" %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
+<br>
+<table class="table">
+<tr>
+<td>
+<%= form_tag({ controller: "tasks", action: "index" }, { :method => :get }) do %>
+  <div class="input-group">
+    <%= select_tag(:status, options_for_select([["All", nil],["Active", false], ["Completed", true]], :selected => params[:status]))  %>
+    <%= submit_tag 'Filter' %>
+  </div>
+<%end%>
+</td>
+<td class="text-right">
+  <button type="button" class="btn btn-light"><%= "#{@items_left} items left"%></button>
+</td>
+</tr>
+</table>
+</div>
+
+<script>
+$(document).ready(function() {
+  var myajax;
+  $('#show-task').on('change', function() {
+    myajax(this.value);
+  });
+   myajax = function(val) {
+    $.ajax({
+      type: 'GET',
+      url: '/tasks',
+      dataType: 'script',
+      data: {
+        value: val,
+      }
+     }).done(function() {});
+    };
+});
+</script>
